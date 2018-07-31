@@ -31,6 +31,12 @@ namespace csrf_cookie
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options => {
+                options.Cookie.Name = "SID";
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -51,6 +57,7 @@ namespace csrf_cookie
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

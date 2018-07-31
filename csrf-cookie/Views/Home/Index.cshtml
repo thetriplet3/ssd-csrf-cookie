@@ -10,19 +10,11 @@
 </form>
 
 <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="~/lib/js-cookie/js.cookie.js"></script>
 <script>
     $(document).ready(function () {
-        $.ajax({
-            url: "/Login/Token",
-            type: 'GET',
-            success: function (res) {
-                $('#frmMain').prepend('<input type="text" id="txtCSRF" name="token" hidden/>');
-                $('#txtCSRF').val(res);
-            },
-            error: function (res) {
-                console.log(res);
-            }
-        });
+        $('#frmMain').prepend('<input type="text" id="txtCSRF" name="token" hidden/>');
+        $('#txtCSRF').val(Cookies.get('CSRF-TOKEN'));
     });
 
     $("#frmMain").submit(function (e) {
