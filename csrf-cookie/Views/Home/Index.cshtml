@@ -4,11 +4,40 @@
 
 <h1>Hello</h1>
 <h3>@ViewData["Message"]</h3>
+<form id="frmMain">
+    <input type="text" id="txtInput" name="input" placeholder="Insert a Value" />
+    <button id="btnSubmit">Submit</button>
+</form>
 
 <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    $.get("/Login/Token", function (data, status) {
-        console.log("Data: " + data + "\nStatus: " + status);
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Login/Token",
+            type: 'GET',
+            success: function (res) {
+                $('#frmMain').prepend('<input type="text" id="txtCSRF" name="token" hidden/>');
+                $('#txtCSRF').val(res);
+            },
+            error: function (res) {
+                console.log(res);
+            }
+        });
     });
+
+    $("#frmMain").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/",
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function (res) {
+                alert("Success!!!")
+            },
+            error: function (res) {
+                alert(res.responseText);
+            }
+        });
+    })
 
 </script>

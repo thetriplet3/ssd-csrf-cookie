@@ -5,35 +5,44 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using csrf_cookie.Models;
+using Microsoft.AspNetCore.Http;
+using csrf_cookie.Common;
 
 namespace csrf_cookie.Controllers
 {
     public class HomeController : Controller
     {
+        private TokenHandler token;
+
         public IActionResult Index()
         {
-            return View();
+            string sessionValue = HttpContext.Session.GetString(Properties.Values.SESSION_KEY);
+            if (string.IsNullOrEmpty(sessionValue))
+            {
+                return RedirectToAction("Index", "Login", new { area = "" });
+            }
+            else
+            {
+                return View();
+            }
         }
 
-        public IActionResult About()
+        [HttpPost("/")]
+        public ActionResult Post(Home obj)
         {
-            ViewData["Message"] = "Your application description page.";
+            token = new TokenHandler();
+            string csrfToken = token.GetCSRFToken(HttpContext.Session.Id);
 
-            return View();
+            if (csrfToken == obj.Token)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(new String("Invalid Token"));
+            }
+
         }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
